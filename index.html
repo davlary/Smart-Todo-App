@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Productivity Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@9.1.2/marked.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                        'primary-dark': '#4B4BC7',
+                        'bg-light': '#FFFFFF',
+                        'bg-dark': '#181818',
+                        'card-light': '#F8FAFC',
+                        'card-dark': '#1F2937'
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'pulse-soft': 'pulseSoft 2s infinite'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes pulseSoft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    /* Markdown content styles (plain CSS to avoid postcss-only @apply) */
+    .markdown-content h1 { font-size:1.5rem; font-weight:700; margin-bottom:1rem; }
+    .markdown-content h2 { font-size:1.25rem; font-weight:600; margin-bottom:0.75rem; }
+    .markdown-content h3 { font-size:1.125rem; font-weight:500; margin-bottom:0.5rem; }
+    .markdown-content p { margin-bottom:0.75rem; color: #6b7280; }
+    .markdown-content ul { list-style:disc; padding-left:1.5rem; margin-bottom:0.75rem; }
+    .markdown-content ol { list-style:decimal; padding-left:1.5rem; margin-bottom:0.75rem; }
+    .markdown-content li { margin-bottom:0.25rem; }
+    .markdown-content strong { font-weight:600; }
+    .markdown-content em { font-style:italic; }
+    .markdown-content code { background:#f3f4f6; padding:2px 6px; border-radius:6px; font-size:0.875rem; }
+    .dark .markdown-content code { background:#111827; color:#e5e7eb; }
+    .markdown-content pre { background:#f3f4f6; padding:1rem; border-radius:8px; overflow-x:auto; margin-bottom:0.75rem; }
+    .dark .markdown-content pre { background:#111827; color:#e5e7eb; }
+    .markdown-content blockquote { border-left:4px solid #5D5CDE; padding-left:1rem; font-style:italic; margin-bottom:0.75rem; color:#6b7280; }
+    </style>
+</head>
+<body class="h-full bg-bg-light dark:bg-bg-dark text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <div class="flex h-full">
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-64 bg-card-light dark:bg-card-dark border-r border-gray-200 dark:border-gray-700 flex flex-col">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h1 class="text-xl font-bold text-primary flex items-center">
+                    <i class="fas fa-brain mr-2"></i>
+                    Productivity Hub
+                </h1>
+            </div>
+            
+            <nav class="flex-1 p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <button onclick="showView(event,'dashboard')" class="nav-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showView(event,'todos')" class="nav-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-tasks"></i>
+                            <span>Todo List</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showView(event,'goals')" class="nav-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-bullseye"></i>
+                            <span>Goals & Roadmaps</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showView(event,'focus')" class="nav-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-crosshairs"></i>
+                            <span>Focus Mode</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showView(event,'journal')" class="nav-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-journal-whills"></i>
+                            <span>Journal</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-hidden">
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="view h-full overflow-y-auto p-8">
+                <div class="max-w-6xl mx-auto">
+                    <h2 class="text-3xl font-bold mb-8">Productivity Dashboard</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        <!-- Today's Focus Card -->
+                        <div class="bg-gradient-to-br from-primary to-primary-dark text-white p-6 rounded-xl shadow-lg">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold">Today's ONE Thing</h3>
+                                <i class="fas fa-star text-yellow-300"></i>
+                            </div>
+                            <p id="one-thing-text" class="text-sm opacity-90">Set your most important task for today</p>
+                            <button onclick="setOneThing()" class="mt-4 bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg text-sm transition-colors">
+                                Set Focus
+                            </button>
+                        </div>
+
+                        <!-- Progress Card -->
+                        <div class="bg-card-light dark:bg-card-dark p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold">Today's Progress</h3>
+                                <i class="fas fa-chart-line text-green-500"></i>
+                            </div>
+                            <div class="text-2xl font-bold text-primary mb-2"><span id="completed-tasks">0</span>/<span id="total-tasks">0</span></div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                <div id="progress-bar" class="bg-primary h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Deep Work Timer -->
+                        <div class="bg-card-light dark:bg-card-dark p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold">Deep Work Timer</h3>
+                                <i class="fas fa-clock text-blue-500"></i>
+                            </div>
+                            <div id="timer-display" class="text-2xl font-bold text-center mb-4">25:00</div>
+                            <div class="flex space-x-2">
+                                <button onclick="startTimer()" class="flex-1 bg-primary hover:bg-primary-dark text-white px-3 py-2 rounded-lg text-sm transition-colors">Start</button>
+                                <button onclick="pauseTimer()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-lg text-sm transition-colors">Pause</button>
+                                <button onclick="resetTimer()" class="flex-1 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm transition-colors">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent AI Insights -->
+                    <div class="bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                            AI Insights & Suggestions
+                        </h3>
+                        <div id="ai-insights" class="markdown-content text-gray-600 dark:text-gray-400">
+                            <p>Complete some tasks or set goals to receive personalized AI insights on your productivity patterns and recommendations for improvement.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Todo List View -->
+            <div id="todos-view" class="view hidden h-full overflow-y-auto p-8">
+                <div class="max-w-4xl mx-auto">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-3xl font-bold">Smart Todo List</h2>
+                        <button onclick="getAIFeedback()" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                            <i class="fas fa-robot"></i>
+                            <span>Get AI Feedback</span>
+                        </button>
+                    </div>
+
+                    <!-- Add Todo Form -->
+                    <div class="bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
+                        <div class="flex space-x-4">
+                            <input 
+                                type="text" 
+                                id="new-todo" 
+                                placeholder="What needs to be done?" 
+                                class="flex-1 px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                onkeypress="if(event.key==='Enter') addTodo()"
+                            >
+                            <select id="todo-priority" class="px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+                                <option value="low">Low Priority</option>
+                                <option value="medium" selected>Medium Priority</option>
+                                <option value="high">High Priority</option>
+                            </select>
+                            <button onclick="addTodo()" class="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg transition-colors">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Todo Categories -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- High Priority -->
+                        <div class="bg-red-50 dark:bg-red-900/20 rounded-xl p-4 border border-red-200 dark:border-red-800">
+                            <h3 class="font-semibold text-red-700 dark:text-red-300 mb-4 flex items-center">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                High Priority
+                            </h3>
+                            <div id="high-priority-todos" class="space-y-3"></div>
+                        </div>
+
+                        <!-- Medium Priority -->
+                        <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-4 border border-yellow-200 dark:border-yellow-800">
+                            <h3 class="font-semibold text-yellow-700 dark:text-yellow-300 mb-4 flex items-center">
+                                <i class="fas fa-clock mr-2"></i>
+                                Medium Priority
+                            </h3>
+                            <div id="medium-priority-todos" class="space-y-3"></div>
+                        </div>
+
+                        <!-- Low Priority -->
+                        <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 border border-green-200 dark:border-green-800">
+                            <h3 class="font-semibold text-green-700 dark:text-green-300 mb-4 flex items-center">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                Low Priority
+                            </h3>
+                            <div id="low-priority-todos" class="space-y-3"></div>
+                        </div>
+                    </div>
+
+                    <!-- AI Feedback Section -->
+                    <div id="ai-feedback-section" class="hidden mt-8 bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-robot text-primary mr-2"></i>
+                            AI Progress Analysis
+                        </h3>
+                        <div id="ai-feedback-content" class="markdown-content">
+                            <div class="flex items-center text-gray-500">
+                                <i class="fas fa-spinner fa-spin mr-2"></i>
+                                Analyzing your progress...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goals & Roadmaps View -->
+            <div id="goals-view" class="view hidden h-full overflow-y-auto p-8">
+                <div class="max-w-4xl mx-auto">
+                    <h2 class="text-3xl font-bold mb-8">Goals & AI Roadmaps</h2>
+
+                    <!-- Add Goal Form -->
+                    <div class="bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
+                        <h3 class="text-lg font-semibold mb-4">Set a New Goal</h3>
+                        <div class="space-y-4">
+                            <input 
+                                type="text" 
+                                id="goal-title" 
+                                placeholder="What do you want to achieve?" 
+                                class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                            >
+                            <textarea 
+                                id="goal-description" 
+                                placeholder="Describe your goal in detail..." 
+                                rows="3"
+                                class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                            ></textarea>
+                            <div class="flex space-x-4">
+                                <select id="goal-timeframe" class="flex-1 px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+                                    <option value="1 week">1 Week</option>
+                                    <option value="1 month" selected>1 Month</option>
+                                    <option value="3 months">3 Months</option>
+                                    <option value="6 months">6 Months</option>
+                                    <option value="1 year">1 Year</option>
+                                </select>
+                                <button onclick="createGoalRoadmap()" class="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors">
+                                    <i class="fas fa-magic"></i>
+                                    <span>Generate AI Roadmap</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Goals List -->
+                    <div id="goals-list" class="space-y-6">
+                        <!-- Goals will be dynamically added here -->
+                    </div>
+
+                    <!-- Roadmap Generation Status -->
+                    <div id="roadmap-generation" class="hidden bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
+                        <div class="flex items-center text-blue-700 dark:text-blue-300">
+                            <i class="fas fa-cog fa-spin mr-3"></i>
+                            <span>AI is generating your personalized roadmap...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Focus Mode View -->
+            <div id="focus-view" class="view hidden h-full overflow-y-auto p-8">
+                <div class="max-w-3xl mx-auto text-center">
+                    <h2 class="text-3xl font-bold mb-8">Deep Work Focus Mode</h2>
+                    
+                    <div class="bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 mb-8">
+                        <div class="text-6xl font-bold text-primary mb-4" id="focus-timer">25:00</div>
+                        <div class="text-lg text-gray-600 dark:text-gray-400 mb-6">Pomodoro Timer</div>
+                        
+                        <div class="flex justify-center space-x-4 mb-8">
+                            <button onclick="startFocusTimer()" class="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors">
+                                <i class="fas fa-play"></i>
+                                <span>Start Focus</span>
+                            </button>
+                            <button onclick="pauseFocusTimer()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors">
+                                <i class="fas fa-pause"></i>
+                                <span>Pause</span>
+                            </button>
+                            <button onclick="resetFocusTimer()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors">
+                                <i class="fas fa-stop"></i>
+                                <span>Reset</span>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div>
+                                <div class="text-2xl font-bold text-green-500" id="completed-pomodoros">0</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">Completed</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-blue-500" id="current-session">1</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">Current Session</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-purple-500" id="daily-focus-time">0h 0m</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">Today's Focus</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Focus Task -->
+                    <div class="bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+                        <h3 class="text-lg font-semibold mb-4">Current Focus Task</h3>
+                        <div id="current-focus-task" class="text-gray-600 dark:text-gray-400">
+                            No task selected. Choose your ONE thing for this session.
+                        </div>
+                        <button onclick="selectFocusTask()" class="mt-4 bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg transition-colors">
+                            Select Task
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Journal View -->
+            <div id="journal-view" class="view hidden h-full overflow-y-auto p-8">
+                <div class="max-w-4xl mx-auto">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-3xl font-bold">Productivity Journal</h2>
+                        <button onclick="getJournalInsights()" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>AI Insights</span>
+                        </button>
+                    </div>
+
+                    <!-- Quick Entry -->
+                    <div class="bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
+                        <h3 class="text-lg font-semibold mb-4">Today's Reflection</h3>
+                        <textarea 
+                            id="journal-entry" 
+                            placeholder="How was your productivity today? What did you accomplish? What challenges did you face?" 
+                            rows="6"
+                            class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        ></textarea>
+                        <div class="flex justify-between items-center mt-4">
+                            <div class="flex space-x-4">
+                                <label class="flex items-center">
+                                    <span class="text-sm mr-2">Energy Level:</span>
+                                    <select id="energy-level" class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+                                        <option value="1">Low</option>
+                                        <option value="2">Below Average</option>
+                                        <option value="3" selected>Average</option>
+                                        <option value="4">High</option>
+                                        <option value="5">Very High</option>
+                                    </select>
+                                </label>
+                                <label class="flex items-center">
+                                    <span class="text-sm mr-2">Focus Quality:</span>
+                                    <select id="focus-quality" class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+                                        <option value="1">Poor</option>
+                                        <option value="2">Below Average</option>
+                                        <option value="3" selected>Average</option>
+                                        <option value="4">Good</option>
+                                        <option value="5">Excellent</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <button onclick="saveJournalEntry()" class="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg transition-colors">
+                                Save Entry
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Journal Entries -->
+                    <div id="journal-entries" class="space-y-6">
+                        <!-- Entries will be dynamically added here -->
+                    </div>
+
+                    <!-- AI Journal Insights -->
+                    <div id="journal-insights-section" class="hidden mt-8 bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-chart-line text-primary mr-2"></i>
+                            AI Journal Analysis
+                        </h3>
+                        <div id="journal-insights-content" class="markdown-content">
+                            <div class="flex items-center text-gray-500">
+                                <i class="fas fa-spinner fa-spin mr-2"></i>
+                                Analyzing your journal patterns...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="frontend.js"></script>
+</body>
+</html>
