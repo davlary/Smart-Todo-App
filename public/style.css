@@ -113,6 +113,55 @@ html,body{height:100%;background:var(--bg);font-family:Inter, ui-sans-serif, sys
   .nav-btn span{display:none}
 }
 
+/* Mobile: off-canvas sidebar */
+@media (max-width: 768px){
+  /* hide sidebar by default on small screens (use transform for smooth GPU-accelerated animation) */
+  #sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    width:260px;
+    height:100%;
+    z-index:60;
+    transform:translateX(-100%);
+    transition:transform 320ms cubic-bezier(.22,.9,.35,1), box-shadow 220ms ease;
+    box-shadow:none;
+    will-change:transform;
+  }
+
+  /* when mobile-open on body, slide it in */
+  body.mobile-open #sidebar{
+    transform:translateX(0);
+    box-shadow:0 18px 50px rgba(2,6,23,0.45);
+  }
+
+  /* overlay behind the sidebar (use opacity/visibility for smooth fade) */
+  #mobile-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+    z-index:50;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity 220ms ease, visibility 220ms ease;
+    pointer-events:none;
+  }
+  body.mobile-open #mobile-overlay{ opacity:1; visibility:visible; pointer-events:auto; }
+
+  /* make nav buttons more tappable */
+  .nav-btn{ padding:1rem; gap:1rem; font-size:1rem }
+
+  /* make cards stack and enlarge spacing */
+  .card{ padding:1rem }
+}
+
+/* Global responsive improvements */
+@media (max-width: 480px){
+  .todo-item{ padding:0.9rem }
+  .toast{ min-width:220px }
+  .heatmap .day{ width:12px; height:12px }
+}
+
 /* Timers */
 #timer-display, #focus-timer{font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;letter-spacing:0.02em}
 

@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Device Test - Productivity Hub</title>
+  <style>
+    body{font-family:Inter,system-ui,Arial;margin:0;background:#f3f4f6;color:#111}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;padding:18px}
+    .frame{background:#fff;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.08);overflow:hidden}
+    .frame h3{margin:12px}
+    .viewport{width:100%;height:640px;border:0}
+    .note{font-size:13px;color:#6b7280;margin:0 12px 12px}
+  </style>
+</head>
+<body>
+  <h1 style="padding:18px;margin:0;font-size:18px">Device preview frames — open locally to manually test and take screenshots</h1>
+  <p class="note">Each frame loads the app's <code>index.html</code>. Use your browser's devtools to capture screenshots or emulate touch events.</p>
+  <div class="grid">
+    <div class="frame">
+      <h3>Mobile - 360×800 (Phone)</h3>
+      <iframe class="viewport" src="index.html" style="width:360px;height:800px"></iframe>
+    </div>
+    <div class="frame">
+      <h3>Small Mobile - 320×800</h3>
+      <iframe class="viewport" src="index.html" style="width:320px;height:800px"></iframe>
+    </div>
+    <div class="frame">
+      <h3>Tablet - 768×1024</h3>
+      <iframe class="viewport" src="index.html" style="width:768px;height:1024px"></iframe>
+    </div>
+    <div class="frame">
+      <h3>Desktop - 1200×800</h3>
+      <iframe class="viewport" src="index.html" style="width:1200px;height:800px"></iframe>
+    </div>
+  </div>
+  <p class="note">Tip: If you see a blank frame due to same-origin/iframe restrictions, open the app directly in multiple browser windows instead (recommended).</p>
+</body>
+</html>

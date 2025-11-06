@@ -69,9 +69,15 @@
                         <i class="fas fa-brain mr-2"></i>
                         Productivity Hub
                     </h1>
-                    <button title="Clear all app data" onclick="clearAllData()" class="text-gray-500 hover:text-red-600 ml-3 p-2 rounded-md" aria-label="Clear all app data">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <!-- Close visible on mobile screens inside sidebar -->
+                        <button id="sidebar-close-btn" onclick="toggleSidebar(false)" class="md:hidden text-gray-500 hover:text-gray-700 p-2 rounded-md" aria-label="Close sidebar">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <button title="Clear all app data" onclick="clearAllData()" class="text-gray-500 hover:text-red-600 ml-3 p-2 rounded-md" aria-label="Clear all app data">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -119,6 +125,20 @@
 
         <!-- Main Content -->
         <div class="flex-1 overflow-hidden">
+            <!-- Mobile header (visible on small screens) -->
+            <div class="md:hidden bg-card-light dark:bg-card-dark border-b border-gray-200 dark:border-gray-700 p-3 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <button id="mobile-menu-btn" aria-label="Open sidebar" onclick="toggleSidebar()" class="p-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i class="fas fa-bars text-lg"></i>
+                    </button>
+                    <div class="text-lg font-semibold text-primary">Productivity Hub</div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="getAIFeedback()" class="hidden sm:inline-flex bg-primary hover:bg-primary-dark text-white px-3 py-2 rounded-lg text-sm">
+                        <i class="fas fa-robot mr-2"></i>AI
+                    </button>
+                </div>
+            </div>
             <!-- Dashboard View -->
             <div id="dashboard-view" class="view h-full overflow-y-auto p-8">
                 <div class="max-w-6xl mx-auto">

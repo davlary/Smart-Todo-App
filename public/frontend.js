@@ -57,6 +57,29 @@ function cacheDOM(){
     DOM.dailyFocusTime = $('daily-focus-time');
 }
 
+// Mobile sidebar toggle (off-canvas behavior)
+window.toggleSidebar = function(force){
+    const isOpen = document.body.classList.contains('mobile-open');
+    const shouldOpen = typeof force === 'boolean' ? force : !isOpen;
+    // Ensure overlay element exists
+    let overlay = $('mobile-overlay');
+    if (!overlay){
+        overlay = document.createElement('div');
+        overlay.id = 'mobile-overlay';
+        document.body.appendChild(overlay);
+        overlay.addEventListener('click', ()=> window.toggleSidebar(false));
+    }
+
+    if (shouldOpen){
+        // rely on CSS for transition (body.mobile-open toggles transform/opactiy)
+        document.body.classList.add('mobile-open');
+        // ensure focus is managed
+        try{ overlay.setAttribute('tabindex','-1'); overlay.focus(); }catch(e){}
+    } else {
+        document.body.classList.remove('mobile-open');
+    }
+};
+
 // Accept either showView('name') or showView(event,'name')
 function showView(a,b){
     const isStringCall = typeof a === 'string';
@@ -589,6 +612,26 @@ window.renderHabits = renderHabits;
 document.addEventListener('DOMContentLoaded', ()=>{ cacheDOM(); // show dashboard by default
     showView('dashboard'); window.updateDashboard(); window.loadJournalEntries(); renderHabits(); // attach optional keyboard handler for Enter
     document.querySelectorAll('#new-todo').forEach(n=>n.addEventListener('keypress', e=>{ if (e.key==='Enter') addTodo(); }));
+
+    // ensure overlay exists but hidden
+    if (!$('mobile-overlay')){
+        const overlay = document.createElement('div'); overlay.id = 'mobile-overlay'; overlay.style.display = 'none'; document.body.appendChild(overlay);
+    }
+
+    // close mobile sidebar when resizing to a wider screen
+    window.addEventListener('resize', ()=>{
+        if (window.innerWidth > 768 && document.body.classList.contains('mobile-open')){
+            window.toggleSidebar(false);
+        }
+    });
+    // Close mobile sidebar with Escape key for accessibility
+    document.addEventListener('keydown', (e)=>{
+        if (e.key === 'Escape' || e.key === 'Esc'){
+            if (document.body.classList.contains('mobile-open')){
+                window.toggleSidebar(false);
+            }
+        }
+    });
 });
 
 })();
